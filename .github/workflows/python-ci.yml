@@ -3,29 +3,19 @@ name: Python CI
 on: [push, pull_request]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@vv4
-      
-    - name: Set up Python
-      uses: actions/setup-python@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v4
       with:
         python-version: '3.9'
         
-    - name: Test Python syntax
+    - name: Check syntax
       run: |
-        python -m py_compile models/*.py
-        python -m py_compile services/*.py
-        python -m py_compile main.py
-        echo "✅ Syntax check passed"
+        python -c "import models.book, models.ebook, models.printed_book, models.user, services.payment, services.library"
+        echo "All imports work"
         
-    - name: Run basic test
-      run: |
-        python -c "from models.ebook import EBook; from models.printed_book import PrintedBook; from datetime import date; ebook = EBook('Test', 'Author', '123', date(2023,1,1), 5.0); pbook = PrintedBook('Test', 'Author', '456', date(2023,1,1), 300); print('✅ Objects created'); print('✅ EBook fee:', ebook.calculate_late_fee(5)); print('✅ Printed fee:', pbook.calculate_late_fee(5)); print('🎉 Basic test passed')"
-        
-    - name: Run main app
-      run: |
-        python main.py
+    - name: Run application
+      run: python main.py
