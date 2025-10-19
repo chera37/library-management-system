@@ -17,5 +17,9 @@ jobs:
         python -c "import models.book, models.ebook, models.printed_book, models.user, services.payment, services.library"
         echo "All imports work"
         
+    - name: Run tests
+      run: |
+        python -m unittest discover tests
+        
     - name: Run application
       run: python main.py
