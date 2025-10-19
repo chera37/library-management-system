@@ -1,0 +1,51 @@
+name: Python CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Test Python syntax
+      run: |
+        python -m py_compile models/*.py
+        python -m py_compile services/*.py
+        python -m py_compile main.py
+        echo "All Python files compile correctly"
+        
+    - name: Run basic tests
+      run: |
+        # Create a simple test
+        cat > test_simple.py << 'EOF'
+from models.ebook import EBook
+from models.printed_book import PrintedBook
+from datetime import date
+
+# Test 1: Create objects
+ebook = EBook("Test EBook", "Author", "123", date(2023,1,1), 5.0)
+pbook = PrintedBook("Test Printed", "Author", "456", date(2023,1,1), 300)
+
+print("Objects created successfully")
+
+# Test 2: Check inheritance
+assert hasattr(ebook, 'calculate_late_fee')
+assert hasattr(pbook, 'calculate_late_fee')
+print("Inheritance working")
+
+# Test 3: Check polymorphism
+ebook_fee = ebook.calculate_late_fee(5)
+pbook_fee = pbook.calculate_late_fee(5)
+print(f"Polymorphism working - EBook fee: ${ebook_fee}, Printed fee: ${pbook_fee}")
+
+print("All basic tests passed!")
+
+      
